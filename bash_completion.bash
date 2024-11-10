@@ -482,6 +482,8 @@ spotbugs:check
 spotbugs:gui
 spotbugs:help
 spotbugs:spotbugs
+spotless:apply
+spotless:check
 spring-boot:repackage
 spring-boot:run
 surefire:test
