@@ -242,6 +242,7 @@ dependency:list-repositories
 dependency:properties
 dependency:purge-local-repository
 dependency:resolve
+dependency:resolve-sources
 dependency:resolve-plugins
 dependency:sources
 dependency:tree
