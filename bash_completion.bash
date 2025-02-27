@@ -450,6 +450,8 @@ release:prepare
 release:rollback
 release:stage
 release:update-versions
+spotless:check
+spotless:apply
 repository:bundle-create
 repository:bundle-pack
 repository:help
@@ -555,10 +557,34 @@ _mvn() {
     COMPREPLY=()
     _get_comp_words_by_ref -n : cur prev
     if [[ ${cur} == -D* ]] ; then
-      local -a options=( "-Dmaven.test.skip=true" "-DskipTests" "-DskipITs" "-Dtest" "-Dit.test" "-DfailIfNoTests" "-Dmaven.surefire.debug"
-                         "-DenableCiProfile" "-Dpmd.skip=true" "-Dcheckstyle.skip=true" "-Dtycho.mode=maven" "-Dmaven.javadoc.skip=true"
-                         "-Dgwt.compiler.skip" "-Dcobertura.skip=true" "-Dfindbugs.skip=true" "-DperformRelease=true" "-Dgpg.skip=true"
-                         "-DforkCount" )
+      local -a options=(
+        # maven-surefire-plugin, maven-failsafe-plugin https://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html
+        "-DskipTests"
+        "-Dmaven.test.skip=true"
+        "-Dmaven.surefire.debug"
+        "-Dmaven.test.redirectTestOutputToFile=true"
+        "-Dmaven.test.failure.ignore=true"
+        "-DskipITs"
+        "-Dtest"
+        "-Dit.test"
+        "-DfailIfNoTests"
+
+        "-DenableCiProfile"
+        "-Dpmd.skip=true"
+        "-Dcheckstyle.skip=true"
+        "-Dtycho.mode=maven"
+        "-Dmaven.javadoc.skip=true"
+        "-Dgwt.compiler.skip"
+        "-Dcobertura.skip=true"
+        "-Dfindbugs.skip=true"
+        "-DperformRelease=true"
+        "-Dgpg.skip=true"
+        "-DforkCount"
+        # maven-spotless-plugin https://github.com/diffplug/spotless/blob/main/plugin-maven/README.md#
+        "-DspotlessSetLicenseHeaderYearsFromGitHistory=true"
+        "-Dspotless.check.skip=true"
+        "-DspotlessFiles="
+       )
       mapfile -t COMPREPLY < <(compgen -S ' ' -W "${options[*]}" -- "${cur}" )
     elif [[ ${prev} == -P || ${prev} == --activate-profiles ]] ; then
       local -a POM_HIERARCHY=( ~/.m2/settings.xml )
