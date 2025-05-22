@@ -584,6 +584,8 @@ _mvn() {
         "-DspotlessSetLicenseHeaderYearsFromGitHistory=true"
         "-Dspotless.check.skip=true"
         "-DspotlessFiles="
+        "-Dmaven.gitcommitid.skip=true"
+        "-Dmaven.gitcommitid.nativegit=true"
        )
       mapfile -t COMPREPLY < <(compgen -S ' ' -W "${options[*]}" -- "${cur}" )
     elif [[ ${prev} == -P || ${prev} == --activate-profiles ]] ; then
