@@ -553,9 +553,16 @@ XYZ
 }
 
 _mvn() {
+    local command="${1:-}"
     local cur prev
     COMPREPLY=()
     _get_comp_words_by_ref -n : cur prev
+
+    case "${command}" in
+      mvnd) command="mvnd" ;;
+      *)    command="mvn" ;;
+    esac
+
     if [[ ${cur} == -D* ]] ; then
       local -a options=(
         # maven-surefire-plugin, maven-failsafe-plugin https://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html
@@ -586,7 +593,53 @@ _mvn() {
         "-DspotlessFiles="
         "-Dmaven.gitcommitid.skip=true"
         "-Dmaven.gitcommitid.nativegit=true"
-       )
+      )
+      if [[ "${command}" == mvnd ]]; then
+        options+=(
+          '-Djava.home'
+          '-Djdk.java.options'
+          '-Dmaven.multiModuleProjectDirectory'
+          '-Dmaven.repo.local'
+          '-Dmaven.settings'
+          '-Dmvnd.buildTime'
+          '-Dmvnd.builder'
+          '-Dmvnd.cancelConnectTimeout'
+          '-Dmvnd.connectTimeout'
+          '-Dmvnd.coreExtensionsExclude'
+          '-Dmvnd.daemonStorage'
+          '-Dmvnd.debug'
+          '-Dmvnd.debug.address'
+          '-Dmvnd.duplicateDaemonGracePeriod'
+          '-Dmvnd.enableAssertions'
+          '-Dmvnd.expirationCheckDelay'
+          '-Dmvnd.home'
+          '-Dmvnd.idleTimeout'
+          '-Dmvnd.jvmArgs'
+          '-Dmvnd.keepAlive'
+          '-Dmvnd.logPurgePeriod'
+          '-Dmvnd.maxHeapSize'
+          '-Dmvnd.maxLostKeepAlive'
+          '-Dmvnd.minHeapSize'
+          '-Dmvnd.minThreads'
+          '-Dmvnd.noBuffering'
+          '-Dmvnd.noDaemon'
+          '-Dmvnd.noModelCache'
+          '-Dmvnd.pluginRealmEvictPattern'
+          '-Dmvnd.propertiesPath'
+          '-Dmvnd.rawStreams'
+          '-Dmvnd.registry'
+          '-Dmvnd.rollingWindowSize'
+          '-Dmvnd.serial'
+          '-Dmvnd.socketConnectTimeout'
+          '-Dmvnd.socketFamily'
+          '-Dmvnd.threadStackSize'
+          '-Dmvnd.threads'
+          '-Dstyle.color'
+          '-Duser.dir'
+          '-Duser.home'
+        )
+      fi
+
       mapfile -t COMPREPLY < <(compgen -S ' ' -W "${options[*]}" -- "${cur}" )
     elif [[ ${prev} == -P || ${prev} == --activate-profiles ]] ; then
       local -a POM_HIERARCHY=( ~/.m2/settings.xml )
@@ -613,12 +666,18 @@ _mvn() {
         "--no-snapshot-updates" "--offline" "--activate-profiles" "--projects" "--quiet" "--resume-from" "--settings"
         "--threads" "--toolchains" "--update-snapshots" "--update-plugins" "--show-version" "--version" "--debug"
       )
+      if [[ "${command}" == mvnd ]]; then
+        long_options+=( '--color' '--completion' '--diag' '--purge' '--raw-streams' '--serial' '--status' '--stop' )
+      fi
       mapfile -t COMPREPLY < <(compgen -S ' ' -W "${long_options[*]}" -- "${cur}" )
     elif [[ ${cur} == -* ]] ; then
       local -a short_options=(
         "-am" "-amd" "-B" "-C" "-c" "-cpu" "-D" "-e" "-emp" "-ep" "-f"
         "-fae" "-ff" "-fn" "-gs" "-h" "-l" "-N" "-npr" "-npu" "-nsu" "-o" "-P" "-pl" "-q" "-rf"
         "-s" "-T" "-t" "-U" "-up" "-V" "-v" "-X" )
+      if [[ "${command}" == mvnd ]]; then
+        short_options+=( '-1' )
+      fi
       mapfile -t COMPREPLY < <(compgen -S ' ' -W "${short_options[*]}" -- "${cur}" )
     elif [[ ${prev} == -pl ]] ; then
       local -a maven_projects
@@ -663,4 +722,4 @@ complete -o default -F _mvn -o nospace mvn
 complete -o default -F _mvn -o nospace mvnDebug
 complete -o default -F _mvn -o nospace mvnw
 complete -o default -F _mvn -o nospace mvnwDebug
-
+complete -o default -F _mvn -o nospace mvnd
